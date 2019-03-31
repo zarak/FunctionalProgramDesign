@@ -64,6 +64,101 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  test("isStanding false when block is flat") {
+    new Level1 {
+      val p1 = Pos(1, 0)
+      val p2 = Pos(2, 0)
+      assert(Block(p1, p2).isStanding === false)
+    }
+  }
+
+  test("isStanding true when block is upright") {
+    new Level1 {
+      val p1 = Pos(1, 0)
+      val p2 = Pos(1, 0)
+      assert(Block(p1, p2).isStanding === true)
+    }
+  }
+
+  test("isLegal") {
+    new Level1 {
+      val p1 = Pos(1, 0)
+      val p2 = Pos(1, 0)
+      val p3 = Pos(0, 4)
+      val p4 = Pos(0, 5)
+      val p5 = Pos(0, 2)
+      val p6 = Pos(0, 3)
+      val b1 = Block(p1, p2)
+      val b2 = Block(p3, p4)
+      val b3 = Block(p5, p6)
+      assert(b1.isLegal)
+      assert(!b2.isLegal)
+      assert(!b3.isLegal, "half of block is on terrain")
+    }
+  }
+
+  test("starting block") {
+    new Level1 {
+      val b1 = Block(startPos, startPos)
+      val b2 = Block(goal, goal)
+      assert(b1 == Block(Pos(1, 1), Pos(1, 1)))
+      assert(b2 != Block(Pos(1, 1), Pos(1, 1)))
+    }
+  }
+
+  test("neighbors") {
+    new Level1 {
+      val b1 = Block(startPos, startPos)
+      assert(b1.neighbors ===
+        List(
+          (Block(Pos(1,-1),Pos(1,0)),Left), (Block(Pos(1,2),Pos(1,3)),Right),
+          (Block(Pos(-1,1),Pos(0,1)),Up), (Block(Pos(2,1),Pos(3,1)),Down))
+        )
+    }
+  }
+
+  test("legal neighbors") {
+    new Level1 {
+      val b1 = Block(startPos, startPos)
+      assert(b1.legalNeighbors ===
+        List(
+          (Block(Pos(1,2),Pos(1,3)),Right),
+          (Block(Pos(2,1),Pos(3,1)),Down))
+      )
+    }
+  }
+
+  test("block at goal is done") {
+    new Level1 {
+      val b = Block(goal, goal)
+      assert(done(b))
+    }
+  }
+
+  test("neighbors with history") {
+    new Level1 {
+      assert(neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet == Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      ))
+    }
+  }
+
+  test("new neighbors only") {
+    new Level1 {
+      assert(
+        newNeighborsOnly(
+        Set(
+          (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+          (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+        ).toStream,
+        Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1))) ) ==
+          Set(
+            (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+          ).toStream
+      )
+    }
+  }
 
 	test("optimal solution for level 1") {
     new Level1 {
