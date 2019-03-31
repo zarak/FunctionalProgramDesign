@@ -108,6 +108,6 @@ trait Solver extends GameDef {
       (block, moveList) <- pathsFromStart
       if (done(block))
     } yield moveList
-    ans(0) reverse
+    ans.head reverse
   }
 }
