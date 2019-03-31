@@ -160,6 +160,12 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  test("from test") {
+    new Level1 {
+      assert(from(Stream.empty, Set()) == Stream.empty)
+    }
+  }
+
 	test("optimal solution for level 1") {
     new Level1 {
       assert(solve(solution) == Block(goal, goal))
